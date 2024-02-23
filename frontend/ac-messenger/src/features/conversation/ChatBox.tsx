@@ -114,13 +114,10 @@ const ChatBox = ({ recipient }: ChatBoxProps) => {
     setMessages(fetchedMsgs.slice(latestDocSlice));
   }, [latestDocSlice, fetchedMsgs]);
 
-  console.log(messages);
-
-  //
   return (
     <section className="flex h-full w-full">
       <div className="bg-secondary w-full flex flex-col">
-        <ChatHeader recipient={recipient} />
+        <ChatHeader messages={messages} recipient={recipient} />
 
         <div className="flex flex-grow items-center justify-center">
           {isPending && <LoadingSpinner msg="fetching messages..." />}

@@ -747,17 +747,17 @@ const ChatBox = ({ recipient  })=>{
         latestDocSlice,
         fetchedMsgs
     ]);
-    console.log(messages); //
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
         className: "flex h-full w-full",
         children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
             className: "bg-secondary w-full flex flex-col",
             children: [
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _chatHeaderDefault.default), {
+                    messages: messages,
                     recipient: recipient
                 }, void 0, false, {
                     fileName: "src/features/conversation/ChatBox.tsx",
-                    lineNumber: 109,
+                    lineNumber: 107,
                     columnNumber: 9
                 }, undefined),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -767,7 +767,7 @@ const ChatBox = ({ recipient  })=>{
                             msg: "fetching messages..."
                         }, void 0, false, {
                             fileName: "src/features/conversation/ChatBox.tsx",
-                            lineNumber: 112,
+                            lineNumber: 110,
                             columnNumber: 25
                         }, undefined),
                         !messages.length && !isPending && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _components.ErrorMsg), {
@@ -777,13 +777,13 @@ const ChatBox = ({ recipient  })=>{
                             subMsg: "start chatting below"
                         }, void 0, false, {
                             fileName: "src/features/conversation/ChatBox.tsx",
-                            lineNumber: 114,
+                            lineNumber: 112,
                             columnNumber: 46
                         }, undefined)
                     ]
                 }, void 0, true, {
                     fileName: "src/features/conversation/ChatBox.tsx",
-                    lineNumber: 111,
+                    lineNumber: 109,
                     columnNumber: 9
                 }, undefined),
                 messages.length !== 0 && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("main", {
@@ -799,20 +799,20 @@ const ChatBox = ({ recipient  })=>{
                                 scrollToBottom: scrollToBottom
                             }, currentMsg.id, false, {
                                 fileName: "src/features/conversation/ChatBox.tsx",
-                                lineNumber: 118,
+                                lineNumber: 116,
                                 columnNumber: 120
                             }, undefined)),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
                             ref: scrollToBottomRef
                         }, void 0, false, {
                             fileName: "src/features/conversation/ChatBox.tsx",
-                            lineNumber: 119,
+                            lineNumber: 117,
                             columnNumber: 13
                         }, undefined)
                     ]
                 }, void 0, true, {
                     fileName: "src/features/conversation/ChatBox.tsx",
-                    lineNumber: 117,
+                    lineNumber: 115,
                     columnNumber: 35
                 }, undefined),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -840,22 +840,22 @@ const ChatBox = ({ recipient  })=>{
                                         className: "text-xl text-white "
                                     }, void 0, false, {
                                         fileName: "src/features/conversation/ChatBox.tsx",
-                                        lineNumber: 135,
+                                        lineNumber: 133,
                                         columnNumber: 19
                                     }, undefined)
                                 }, void 0, false, {
                                     fileName: "src/features/conversation/ChatBox.tsx",
-                                    lineNumber: 134,
+                                    lineNumber: 132,
                                     columnNumber: 17
                                 }, undefined)
                             }, void 0, false, {
                                 fileName: "src/features/conversation/ChatBox.tsx",
-                                lineNumber: 124,
+                                lineNumber: 122,
                                 columnNumber: 31
                             }, undefined)
                         }, void 0, false, {
                             fileName: "src/features/conversation/ChatBox.tsx",
-                            lineNumber: 123,
+                            lineNumber: 121,
                             columnNumber: 11
                         }, undefined),
                         chatId && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _chatFormDefault.default), {
@@ -864,24 +864,24 @@ const ChatBox = ({ recipient  })=>{
                             setIsEditingMsg: setIsEditingMsg
                         }, void 0, false, {
                             fileName: "src/features/conversation/ChatBox.tsx",
-                            lineNumber: 140,
+                            lineNumber: 138,
                             columnNumber: 22
                         }, undefined)
                     ]
                 }, void 0, true, {
                     fileName: "src/features/conversation/ChatBox.tsx",
-                    lineNumber: 122,
+                    lineNumber: 120,
                     columnNumber: 9
                 }, undefined)
             ]
         }, void 0, true, {
             fileName: "src/features/conversation/ChatBox.tsx",
-            lineNumber: 108,
+            lineNumber: 106,
             columnNumber: 7
         }, undefined)
     }, void 0, false, {
         fileName: "src/features/conversation/ChatBox.tsx",
-        lineNumber: 107,
+        lineNumber: 105,
         columnNumber: 10
     }, undefined);
 };
@@ -1315,11 +1315,15 @@ var _components = require("components");
 var _hooks = require("hooks");
 var _chatReducer = require("features/inbox/chatReducer");
 var _sideContentReducer = require("reducers/sideContentReducer");
+var _react = require("react");
+var _framerMotion = require("framer-motion");
 var _s = $RefreshSig$();
-const ChatHeader = ({ recipient  })=>{
+const ChatHeader = ({ recipient , messages  })=>{
     _s();
     const { isGroup  } = (0, _hooks.useAppSelector)((0, _chatReducer.getChatState));
     const online = (0, _hooks.useGetUserStatus)(recipient?.uid);
+    const [msgSummary, setMsgSummary] = (0, _react.useState)();
+    const [summaryLoading, setSummaryLoading] = (0, _react.useState)(false);
     const dispatch = (0, _hooks.useAppDispatch)();
     const profileClickHandler = ()=>{
         // 768px screen width below have the mobile layout
@@ -1331,7 +1335,25 @@ const ChatHeader = ({ recipient  })=>{
     const handleBackBtn = ()=>{
         dispatch((0, _chatReducer.resetChat)());
     };
+    const summariseMessages = ()=>{
+        if (!summaryLoading) {
+            setSummaryLoading(true);
+            const msg = messages.map(({ message , id  })=>({
+                    message
+                }));
+            setSummaryLoading(false); // IMPLEMENT API
+            console.log(msg, messages);
+            setMsgSummary("This is a chat summary");
+            setTimeout(()=>{
+                setMsgSummary(undefined);
+            }, 5000);
+        }
+    };
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("header", {
+        style: {
+            position: "relative",
+            justifyContent: "space-between"
+        },
         className: "border-b border-main w-full p-4 mb-auto bg-main duration-300 flex gap-2",
         children: [
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _components.TwButton), {
@@ -1342,12 +1364,12 @@ const ChatHeader = ({ recipient  })=>{
                     className: "text-xl"
                 }, void 0, false, {
                     fileName: "src/features/conversation/ChatHeader.tsx",
-                    lineNumber: 38,
+                    lineNumber: 66,
                     columnNumber: 9
                 }, undefined)
             }, void 0, false, {
                 fileName: "src/features/conversation/ChatHeader.tsx",
-                lineNumber: 37,
+                lineNumber: 65,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -1362,12 +1384,12 @@ const ChatHeader = ({ recipient  })=>{
                             size: "small"
                         }, void 0, false, {
                             fileName: "src/features/conversation/ChatHeader.tsx",
-                            lineNumber: 42,
+                            lineNumber: 70,
                             columnNumber: 11
                         }, undefined)
                     }, void 0, false, {
                         fileName: "src/features/conversation/ChatHeader.tsx",
-                        lineNumber: 41,
+                        lineNumber: 69,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -1377,28 +1399,71 @@ const ChatHeader = ({ recipient  })=>{
                             children: recipient.displayName || recipient.groupName
                         }, void 0, false, {
                             fileName: "src/features/conversation/ChatHeader.tsx",
-                            lineNumber: 45,
+                            lineNumber: 73,
                             columnNumber: 11
                         }, undefined)
                     }, void 0, false, {
                         fileName: "src/features/conversation/ChatHeader.tsx",
-                        lineNumber: 44,
+                        lineNumber: 72,
                         columnNumber: 9
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "src/features/conversation/ChatHeader.tsx",
-                lineNumber: 40,
+                lineNumber: 68,
+                columnNumber: 7
+            }, undefined),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _components.TwButton), {
+                className: "flex-end",
+                variant: "contained",
+                onClick: summariseMessages,
+                children: summaryLoading ? "Loading..." : "Summary"
+            }, void 0, false, {
+                fileName: "src/features/conversation/ChatHeader.tsx",
+                lineNumber: 88,
+                columnNumber: 7
+            }, undefined),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _framerMotion.AnimatePresence), {
+                children: msgSummary && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _framerMotion.motion).div, {
+                    className: " peer flex rounded-xl py-1.5 px-3 text-md max-w-xs w-fit h-fit text-start break-words bg-white text-black rounded-sm ",
+                    style: {
+                        borderRadius: "5px",
+                        position: "absolute",
+                        bottom: "-20px",
+                        left: 0,
+                        margin: "10px"
+                    },
+                    animate: {
+                        opacity: 1,
+                        y: "100%"
+                    },
+                    initial: {
+                        opacity: 0,
+                        y: "0%"
+                    },
+                    exit: {
+                        opacity: 0,
+                        y: "100%"
+                    },
+                    children: msgSummary
+                }, void 0, false, {
+                    fileName: "src/features/conversation/ChatHeader.tsx",
+                    lineNumber: 92,
+                    columnNumber: 24
+                }, undefined)
+            }, void 0, false, {
+                fileName: "src/features/conversation/ChatHeader.tsx",
+                lineNumber: 91,
                 columnNumber: 7
             }, undefined)
         ]
     }, void 0, true, {
         fileName: "src/features/conversation/ChatHeader.tsx",
-        lineNumber: 36,
+        lineNumber: 61,
         columnNumber: 10
     }, undefined);
 };
-_s(ChatHeader, "tqg0COSHsC6CoV79gS2LgdjndeI=", false, function() {
+_s(ChatHeader, "NZYr89yBeM7JyocQznCh3HVKQjs=", false, function() {
     return [
         (0, _hooks.useAppSelector),
         (0, _hooks.useGetUserStatus),
@@ -1415,7 +1480,7 @@ $RefreshReg$(_c, "ChatHeader");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react-icons/ai":"47mDn","components":"dHnah","hooks":"5jDAD","features/inbox/chatReducer":"lTxiv","reducers/sideContentReducer":"kY5cy","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"gtn7V":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react-icons/ai":"47mDn","components":"dHnah","hooks":"5jDAD","features/inbox/chatReducer":"lTxiv","reducers/sideContentReducer":"kY5cy","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","react":"21dqq","framer-motion":"5bZBB"}],"gtn7V":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$4f05 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;

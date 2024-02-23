@@ -1,19 +1,24 @@
 import { AiOutlineArrowLeft } from "react-icons/ai";
 
 import { ProfilePicture, TwButton } from "components";
-import { User } from "interfaces";
+import { Message, User } from "interfaces";
 import { useAppDispatch, useAppSelector } from "hooks";
 import { getChatState, resetChat } from "features/inbox/chatReducer";
 import { useGetUserStatus } from "hooks";
 import { showUserProfile } from "reducers/sideContentReducer";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface ChatHeaderProps {
   recipient: User;
+  messages: Message[];
 }
 
-const ChatHeader = ({ recipient }: ChatHeaderProps) => {
+const ChatHeader = ({ recipient, messages }: ChatHeaderProps) => {
   const { isGroup } = useAppSelector(getChatState);
   const online = useGetUserStatus(recipient?.uid);
+  const [msgSummary, setMsgSummary] = useState<string | undefined>();
+  const [summaryLoading, setSummaryLoading] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -30,8 +35,27 @@ const ChatHeader = ({ recipient }: ChatHeaderProps) => {
     dispatch(resetChat());
   };
 
+  const summariseMessages = () => {
+    if (!summaryLoading) {
+      setSummaryLoading(true);
+      const msg = messages.map(({ message, id }) => ({
+        message,
+      }));
+      setSummaryLoading(false);
+      // IMPLEMENT API
+      console.log(msg, messages);
+      setMsgSummary("This is a chat summary");
+      setTimeout(() => {
+        setMsgSummary(undefined);
+      }, 5000);
+    }
+  };
+
   return (
-    <header className="border-b border-main w-full p-4  mb-auto bg-main duration-300 flex gap-2">
+    <header
+      style={{ position: "relative", justifyContent: "space-between" }}
+      className="border-b border-main w-full p-4  mb-auto bg-main duration-300 flex gap-2"
+    >
       <TwButton
         variant="transparent"
         onClick={handleBackBtn}
@@ -59,6 +83,36 @@ const ChatHeader = ({ recipient }: ChatHeaderProps) => {
           )} */}
         </div>
       </div>
+      <TwButton
+        className="flex-end"
+        variant="contained"
+        onClick={summariseMessages}
+      >
+        {summaryLoading ? "Loading..." : "Summary"}
+      </TwButton>
+      <AnimatePresence>
+        {msgSummary && (
+          <motion.div
+            className="
+          peer flex rounded-xl py-1.5 px-3 text-md max-w-xs w-fit h-fit text-start break-words 
+          bg-white text-black rounded-sm
+        "
+            style={{
+              borderRadius: "5px",
+              position: "absolute",
+              bottom: "-20px",
+              left: 0,
+              margin: "10px",
+            }}
+            animate={{ opacity: 1, y: "100%" }}
+            initial={{ opacity: 0, y: "0%" }}
+            exit={{ opacity: 0, y: "100%" }}
+            // className="absolute -top-3/4 left-1/2 z-10"
+          >
+            {msgSummary}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

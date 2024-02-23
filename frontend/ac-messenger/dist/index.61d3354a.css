@@ -836,6 +836,10 @@ img, video {
   border-radius: 1.5rem;
 }
 
+.rounded-sm {
+  border-radius: .125rem;
+}
+
 .rounded-br-sm {
   border-bottom-right-radius: .125rem;
 }
