@@ -18,7 +18,7 @@ interface ChatHeaderProps {
 const model = "text-davinci-002";
 
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey: "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",
 });
 const openai = new OpenAIApi(configuration);
 
@@ -41,7 +41,7 @@ export async function query(params = {}) {
       "Content-Type": "application/json",
       Authorization:
         "Bearer " +
-        String("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"),
+        String("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"),
     },
     body: JSON.stringify(params_),
   };
