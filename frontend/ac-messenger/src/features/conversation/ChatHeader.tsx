@@ -1,5 +1,6 @@
 import { AiOutlineArrowLeft } from "react-icons/ai";
 
+import { Configuration, OpenAIApi } from "openai";
 import { ProfilePicture, TwButton } from "components";
 import { Message, User } from "interfaces";
 import { useAppDispatch, useAppSelector } from "hooks";
@@ -13,6 +14,70 @@ interface ChatHeaderProps {
   recipient: User;
   messages: Message[];
 }
+
+const model = "text-davinci-002";
+
+const configuration = new Configuration({
+  apiKey: "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",
+});
+const openai = new OpenAIApi(configuration);
+
+delete configuration.baseOptions.headers["User-Agent"];
+
+const DEFAULT_PARAMS = {
+  model: "gpt-4",
+  temperature: 0.7,
+  max_tokens: 256,
+  top_p: 1,
+  frequency_penalty: 0,
+  presence_penalty: 0,
+};
+
+export async function query(params = {}) {
+  const params_ = { ...DEFAULT_PARAMS, ...params };
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization:
+        "Bearer " +
+        String("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"),
+    },
+    body: JSON.stringify(params_),
+  };
+  const response = await fetch(
+    "https://api.openai.com/v1/chat/completions",
+    requestOptions
+  );
+  const data = await response.json();
+  return data.choices[0].text;
+}
+
+const fetchData = async (str: string) => {
+  try {
+    const answer = await openai.createChatCompletion({
+      model: "gpt-4",
+      // prompt: `Write a code in ${language} for: "${input}"`,
+      messages: [
+        {
+          role: "user",
+          content: `Your task is to extract relevant information from a text. This information will be used to create a chat summary.
+        Extract relevant information from the following text.
+        Be sure to preserve the important details.`,
+        },
+        { role: "user", content: str },
+      ],
+      max_tokens: 3000,
+      temperature: 0.7,
+      n: 1,
+    });
+
+    const text = answer.data.choices[0];
+    return text;
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 const ChatHeader = ({ recipient, messages }: ChatHeaderProps) => {
   const { isGroup } = useAppSelector(getChatState);
@@ -36,18 +101,21 @@ const ChatHeader = ({ recipient, messages }: ChatHeaderProps) => {
   };
 
   const summariseMessages = () => {
-    if (!summaryLoading) {
-      setSummaryLoading(true);
-      const msg = messages.map(({ message, id }) => ({
-        message,
-      }));
+    setMsgSummary(undefined);
+    const callApi = async (str: any) => {
+      const data = await fetchData(str);
+      setMsgSummary(data?.message?.content);
+
       setSummaryLoading(false);
-      // IMPLEMENT API
-      console.log(msg, messages);
-      setMsgSummary("This is a chat summary");
       setTimeout(() => {
         setMsgSummary(undefined);
-      }, 5000);
+      }, 10000);
+    };
+    if (!summaryLoading) {
+      const msg = messages.map(({ message, id }) => message).join(" ");
+      // IMPLEMENT API
+      setSummaryLoading(true);
+      callApi(msg);
     }
   };
 
@@ -94,11 +162,12 @@ const ChatHeader = ({ recipient, messages }: ChatHeaderProps) => {
         {msgSummary && (
           <motion.div
             className="
-          peer flex rounded-xl py-1.5 px-3 text-md max-w-xs w-fit h-fit text-start break-words 
+          peer rounded-xl py-1.5 px-3 text-md w-fit h-fit text-start break-words 
           bg-white text-black rounded-sm
         "
             style={{
-              borderRadius: "5px",
+              boxShadow: "1px 2px 7px 3px #0000004a",
+              borderRadius: "10px",
               position: "absolute",
               bottom: "-20px",
               left: 0,
@@ -109,6 +178,8 @@ const ChatHeader = ({ recipient, messages }: ChatHeaderProps) => {
             exit={{ opacity: 0, y: "100%" }}
             // className="absolute -top-3/4 left-1/2 z-10"
           >
+            <b>🤖 AI SUMMARY 🤖</b>
+            <br />
             {msgSummary}
           </motion.div>
         )}
